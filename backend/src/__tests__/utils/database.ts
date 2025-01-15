@@ -8,4 +8,4 @@ const disconnect = async (): Promise<void> => {
   return database.connectionManager.close();
 };
 
-export { truncate, disconnect };
+export { disconnect, truncate };

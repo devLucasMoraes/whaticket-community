@@ -1,23 +1,23 @@
+import { compare, hash } from "bcryptjs";
 import {
-  Table,
-  Column,
-  CreatedAt,
-  UpdatedAt,
-  Model,
-  DataType,
+  AutoIncrement,
   BeforeCreate,
   BeforeUpdate,
-  PrimaryKey,
-  AutoIncrement,
-  Default,
-  HasMany,
+  BelongsTo,
   BelongsToMany,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
   ForeignKey,
-  BelongsTo
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt
 } from "sequelize-typescript";
-import { hash, compare } from "bcryptjs";
-import Ticket from "./Ticket";
 import Queue from "./Queue";
+import Ticket from "./Ticket";
 import UserQueue from "./UserQueue";
 import Whatsapp from "./Whatsapp";
 

@@ -1,5 +1,5 @@
-import path from "path";
 import multer from "multer";
+import path from "path";
 
 const publicFolder = path.resolve(__dirname, "..", "..", "public");
 export default {

@@ -1,9 +1,9 @@
-import { Server as SocketIO } from "socket.io";
 import { Server } from "http";
 import { verify } from "jsonwebtoken";
+import { Server as SocketIO } from "socket.io";
+import authConfig from "../config/auth";
 import AppError from "../errors/AppError";
 import { logger } from "../utils/logger";
-import authConfig from "../config/auth";
 
 let io: SocketIO;
 

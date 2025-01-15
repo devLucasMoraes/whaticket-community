@@ -1,5 +1,5 @@
-import Setting from "../models/Setting";
 import AppError from "../errors/AppError";
+import Setting from "../models/Setting";
 
 const CheckSettings = async (key: string): Promise<string> => {
   const setting = await Setting.findOne({

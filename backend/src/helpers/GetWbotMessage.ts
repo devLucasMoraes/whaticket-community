@@ -1,7 +1,7 @@
 import { Message as WbotMessage } from "whatsapp-web.js";
+import AppError from "../errors/AppError";
 import Ticket from "../models/Ticket";
 import GetTicketWbot from "./GetTicketWbot";
-import AppError from "../errors/AppError";
 
 export const GetWbotMessage = async (
   ticket: Ticket,

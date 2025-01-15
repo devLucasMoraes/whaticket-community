@@ -1,5 +1,5 @@
-import QuickAnswer from "../../models/QuickAnswer";
 import AppError from "../../errors/AppError";
+import QuickAnswer from "../../models/QuickAnswer";
 
 const ShowQuickAnswerService = async (id: string): Promise<QuickAnswer> => {
   const quickAnswer = await QuickAnswer.findByPk(id);

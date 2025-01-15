@@ -1,12 +1,12 @@
-import { Op, fn, where, col, Filterable, Includeable } from "sequelize";
-import { startOfDay, endOfDay, parseISO } from "date-fns";
+import { endOfDay, parseISO, startOfDay } from "date-fns";
+import { col, Filterable, fn, Includeable, Op, where } from "sequelize";
 
-import Ticket from "../../models/Ticket";
 import Contact from "../../models/Contact";
 import Message from "../../models/Message";
 import Queue from "../../models/Queue";
-import ShowUserService from "../UserServices/ShowUserService";
+import Ticket from "../../models/Ticket";
 import Whatsapp from "../../models/Whatsapp";
+import ShowUserService from "../UserServices/ShowUserService";
 
 interface Request {
   searchParam?: string;
