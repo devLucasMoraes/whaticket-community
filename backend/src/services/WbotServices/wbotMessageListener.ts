@@ -109,7 +109,7 @@ const verifyMediaMessage = async (
     );
   } catch (err) {
     Sentry.captureException(err);
-    logger.error(err);
+    logger.error(err as unknown as any);
   }
 
   const messageData = {
@@ -128,6 +128,15 @@ const verifyMediaMessage = async (
   const newMessage = await CreateMessageService({ messageData });
 
   return newMessage;
+};
+const prepareLocation = (msg: WbotMessage): WbotMessage => {
+  const gmapsUrl = `https://maps.google.com/maps?q=${msg.location.latitude}%2C${msg.location.longitude}&z=17&hl=pt-BR`;
+
+  msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
+
+  msg.body += `|${`${msg.location.latitude}, ${msg.location.longitude}`}`;
+
+  return msg;
 };
 
 const verifyMessage = async (
@@ -149,34 +158,18 @@ const verifyMessage = async (
     quotedMsgId: quotedMsg?.id
   };
 
-  // temporaryly disable ts checks because of type definition bug for Location object
-  // @ts-ignore
+  let lastMessage;
+  if (msg.type === "location") {
+    lastMessage = "Localization - ";
+  } else {
+    lastMessage = msg.body;
+  }
+
   await ticket.update({
-    lastMessage:
-      msg.type === "location"
-        ? msg.location.description
-          ? `Localization - ${msg.location.description.split("\\n")[0]}`
-          : "Localization"
-        : msg.body
+    lastMessage
   });
 
   await CreateMessageService({ messageData });
-};
-
-const prepareLocation = (msg: WbotMessage): WbotMessage => {
-  const gmapsUrl = `https://maps.google.com/maps?q=${msg.location.latitude}%2C${msg.location.longitude}&z=17&hl=pt-BR`;
-
-  msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
-
-  // temporaryly disable ts checks because of type definition bug for Location object
-  // @ts-ignore
-  msg.body += `|${
-    msg.location.description
-      ? msg.location.description
-      : `${msg.location.latitude}, ${msg.location.longitude}`
-  }`;
-
-  return msg;
 };
 
 const verifyQueue = async (
@@ -339,29 +332,28 @@ const handleMessage = async (
 
     if (msg.type === "vcard") {
       try {
-        const array = msg.body.split("\n");
-        const obj = [];
-        let contact = "";
-        for (let index = 0; index < array.length; index++) {
-          const v = array[index];
-          const values = v.split(":");
-          for (let ind = 0; ind < values.length; ind++) {
-            if (values[ind].indexOf("+") !== -1) {
-              obj.push({ number: values[ind] });
-            }
-            if (values[ind].indexOf("FN") !== -1) {
-              contact = values[ind + 1];
-            }
+        const lines = msg.body.split("\n");
+        const contactNumbers: { number: string }[] = [];
+        let contactName = "";
+
+        lines.forEach(line => {
+          const [key, value] = line.split(":");
+          if (value && value.includes("+")) {
+            contactNumbers.push({ number: value });
           }
-        }
-        for await (const ob of obj) {
-          const cont = await CreateContactService({
-            name: contact,
-            number: ob.number.replace(/\D/g, "")
+          if (key === "FN") {
+            contactName = value;
+          }
+        });
+
+        contactNumbers.forEach(async contactNumber => {
+          await CreateContactService({
+            name: contactName,
+            number: contactNumber.number.replace(/\D/g, "")
           });
-        }
+        });
       } catch (error) {
-        console.log(error);
+        console.error("Failed to process vCard:", error);
       }
     }
 
